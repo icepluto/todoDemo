@@ -19,7 +19,12 @@
             <input type="text" v-model= "inputValue">
             <button v-on:click = "handleBtnClick">提交</button>
             <ul>
-                <todo-item v-bind:content = "item" v-for = "item in list"></todo-item>
+                <todo-item 
+                v-bind:content = "item" 
+                v-bind:index = "index"
+                v-for = "(item,index) in list"
+                @dele = "handleItemDelete"
+                ></todo-item>
             </ul>
         </div>
         <script>
@@ -31,14 +36,19 @@
 
         //局部组件
         const TodoItem = {
-            props:['content'],
-            template:"<li>{{content}}</li>"
+            props:['content','index'],
+            template:"<li v-on:click ='handleItemClick'>{{content}}</li>",
+            methods:{
+                handleItemClick : function() {
+                    this.$emit("dele",this.index); 
+                }
+            }
         }
         const app = new Vue({
             el:"#todo",
             //局部组件
             components: {
-                TodoItem,
+                TodoItem:TodoItem,
             },
             data:{
                 list:[],
@@ -49,8 +59,15 @@
                     
                     this.list.push(this.inputValue)
                     this.inputValue = ""
+                    
+                    
                         
+                },
+                //splice方法splice(必需下标，必需删除几项，可选添加的item)
+                handleItemDelete : function(index) {
+                    this.list.splice(index,1)
                 }
+
             }
 
         })
